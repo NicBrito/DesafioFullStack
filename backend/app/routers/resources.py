@@ -4,8 +4,12 @@ from sqlalchemy.orm import Session
 
 from app.db import get_db
 from app.models import Resource
-from app.schemas import PaginatedResourceOut, ResourceCreate, ResourceOut, ResourceUpdate
-
+from app.schemas import (
+    PaginatedResourceOut,
+    ResourceCreate,
+    ResourceOut,
+    ResourceUpdate,
+)
 
 router = APIRouter(prefix="/resources", tags=["resources"])
 
@@ -43,12 +47,16 @@ def list_resources(
 def get_resource(resource_id: int, db: Session = Depends(get_db)) -> ResourceOut:
     resource = db.get(Resource, resource_id)
     if not resource:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resource not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Resource not found"
+        )
     return to_out(resource)
 
 
 @router.post("", response_model=ResourceOut, status_code=status.HTTP_201_CREATED)
-def create_resource(payload: ResourceCreate, db: Session = Depends(get_db)) -> ResourceOut:
+def create_resource(
+    payload: ResourceCreate, db: Session = Depends(get_db)
+) -> ResourceOut:
     resource = Resource(
         title=payload.title,
         description=payload.description,
@@ -63,10 +71,14 @@ def create_resource(payload: ResourceCreate, db: Session = Depends(get_db)) -> R
 
 
 @router.put("/{resource_id}", response_model=ResourceOut)
-def update_resource(resource_id: int, payload: ResourceUpdate, db: Session = Depends(get_db)) -> ResourceOut:
+def update_resource(
+    resource_id: int, payload: ResourceUpdate, db: Session = Depends(get_db)
+) -> ResourceOut:
     resource = db.get(Resource, resource_id)
     if not resource:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resource not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Resource not found"
+        )
 
     resource.title = payload.title
     resource.description = payload.description
@@ -84,7 +96,9 @@ def update_resource(resource_id: int, payload: ResourceUpdate, db: Session = Dep
 def delete_resource(resource_id: int, db: Session = Depends(get_db)) -> None:
     resource = db.get(Resource, resource_id)
     if not resource:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Resource not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Resource not found"
+        )
 
     db.delete(resource)
     db.commit()

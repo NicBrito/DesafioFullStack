@@ -6,7 +6,6 @@ import httpx
 
 from app.core.config import get_settings
 
-
 logger = logging.getLogger("app.ai")
 
 
@@ -20,7 +19,9 @@ def _fallback_response(title: str, resource_type: str) -> tuple[str, list[str], 
     return description, tags, token_usage
 
 
-def generate_description_and_tags(title: str, resource_type: str) -> tuple[str, list[str]]:
+def generate_description_and_tags(
+    title: str, resource_type: str
+) -> tuple[str, list[str]]:
     settings = get_settings()
     started_at = time.perf_counter()
 

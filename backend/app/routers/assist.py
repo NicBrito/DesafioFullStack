@@ -3,7 +3,6 @@ from pydantic import BaseModel, Field
 
 from app.ai_service import generate_description_and_tags
 
-
 router = APIRouter(prefix="/assist", tags=["assist"])
 
 
@@ -19,5 +18,7 @@ class AssistResponse(BaseModel):
 
 @router.post("", response_model=AssistResponse)
 def smart_assist(payload: AssistRequest) -> AssistResponse:
-    description, tags = generate_description_and_tags(payload.title, payload.resource_type)
+    description, tags = generate_description_and_tags(
+        payload.title, payload.resource_type
+    )
     return AssistResponse(description=description, tags=tags)

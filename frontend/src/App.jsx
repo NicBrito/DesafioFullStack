@@ -28,11 +28,16 @@ export default function App() {
         setError('')
         try {
             const data = await listResources(targetPage, pageSize)
-            setItems(data.items)
-            setTotal(data.total)
-            setPage(data.page)
+            const nextItems = Array.isArray(data?.items) ? data.items : []
+            const nextTotal = Number.isFinite(data?.total) ? data.total : nextItems.length
+            const nextPage = Number.isFinite(data?.page) ? data.page : targetPage
+
+            setItems(nextItems)
+            setTotal(nextTotal)
+            setPage(nextPage)
         } catch (err) {
             setError(err.message)
+            setItems([])
         } finally {
             setLoadingList(false)
         }
@@ -82,13 +87,14 @@ export default function App() {
     }
 
     function onEdit(resource) {
+        const safeTags = Array.isArray(resource.tags) ? resource.tags : []
         setEditingId(resource.id)
         setForm({
             title: resource.title,
             description: resource.description,
             resource_type: resource.resource_type,
             url: resource.url,
-            tags: resource.tags.join(', '),
+            tags: safeTags.join(', '),
         })
         setError('')
     }
@@ -208,7 +214,10 @@ export default function App() {
                                         <small>
                                             Tipo: {resource.resource_type} | URL: {resource.url}
                                         </small>
-                                        <p>Tags: {resource.tags.join(', ') || '-'}</p>
+                                        <p>
+                                            Tags:{' '}
+                                            {Array.isArray(resource.tags) ? resource.tags.join(', ') || '-' : '-'}
+                                        </p>
                                     </div>
                                     <div className="actions">
                                         <button type="button" onClick={() => onEdit(resource)}>

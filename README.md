@@ -82,6 +82,18 @@ Para modo `live`, configurar:
 - `OPENAI_BASE_URL`
 - `OPENAI_MODEL`
 
+## Deploy na Vercel (Frontend)
+
+Para evitar o erro `Failed to fetch` em produção:
+
+1. Configure a variável `VITE_API_URL` no projeto da Vercel com a URL pública do backend.
+2. No backend, configure `CORS_ORIGINS` incluindo o domínio da Vercel (ex.: `https://seu-projeto.vercel.app`).
+
+Exemplo:
+
+- `VITE_API_URL=https://seu-backend.onrender.com`
+- `CORS_ORIGINS=http://localhost:5173,https://seu-projeto.vercel.app`
+
 ## Endpoints principais
 
 - `GET /health`

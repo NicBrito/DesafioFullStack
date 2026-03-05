@@ -1,13 +1,35 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const isProduction = import.meta.env.PROD
+const configuredApiUrl = (import.meta.env.VITE_API_URL || '').trim()
+const API_URL = configuredApiUrl || (isProduction ? '' : 'http://localhost:8000')
+
+if (isProduction && !API_URL) {
+  throw new Error(
+    'Configuração ausente: defina VITE_API_URL no deploy para a URL pública do backend.',
+  )
+}
+
+function buildUrl(path) {
+  const base = API_URL.endsWith('/') ? API_URL.slice(0, -1) : API_URL
+  const suffix = path.startsWith('/') ? path : `/${path}`
+  return `${base}${suffix}`
+}
 
 async function request(path, options = {}) {
-  const response = await fetch(`${API_URL}${path}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options.headers || {}),
-    },
-    ...options,
-  })
+  let response
+  try {
+    response = await fetch(buildUrl(path), {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options.headers || {}),
+      },
+      ...options,
+    })
+  } catch {
+    if (isProduction) {
+      throw new Error('Falha de conexão com a API. Verifique VITE_API_URL e CORS do backend.')
+    }
+    throw new Error('Falha de conexão com a API local. Confirme se o backend está em execução.')
+  }
 
   if (response.status === 204) {
     return null
